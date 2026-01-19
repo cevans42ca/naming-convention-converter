@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write  # Allows the action to upload assets to the release
+
 jobs:
   build:
     name: Build for ${{ matrix.os }}
@@ -26,9 +29,10 @@ jobs:
       run: mvn clean package --file pom.xml
 
     - name: Upload JAR to Release
-      # Using the built-in GitHub CLI (gh) instead of a 3rd party action
       shell: bash
       run: |
-        gh release upload ${{ github.event.release.tag_name }} target/*.jar --clobber
+        # Rename the file to include the OS name before uploading
+        mv target/*.jar target/naming-converter-${{ matrix.os }}.jar
+        gh release upload ${{ github.event.release.tag_name }} target/naming-converter-${{ matrix.os }}.jar --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
