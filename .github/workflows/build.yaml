@@ -38,7 +38,7 @@ jobs:
         ls target/*.jar
 
         # Rename the file to include the OS name before uploading
-        mv target/*.jar target/naming-converter-${{ matrix.os }}.jar
-        gh release upload ${{ github.event.release.tag_name }} target/naming-converter-${{ matrix.os }}.jar --clobber
+        mv target/naming-convention-converter-*.jar target/naming-convention-converter-${{ matrix.os }}.jar
+        gh release upload ${{ github.event.release.tag_name }} target/naming-convention-converter-${{ matrix.os }}.jar --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
