@@ -28,12 +28,15 @@ jobs:
     - name: Build with Maven
       run: |
         cd NamingConventionConverter
-        mvn clean package --file pom.xml
+        mvn clean package
+        ls target/*.jar
 
     - name: Upload JAR to Release
       shell: bash
       run: |
         cd NamingConventionConverter
+        ls target/*.jar
+
         # Rename the file to include the OS name before uploading
         mv target/*.jar target/naming-converter-${{ matrix.os }}.jar
         gh release upload ${{ github.event.release.tag_name }} target/naming-converter-${{ matrix.os }}.jar --clobber
