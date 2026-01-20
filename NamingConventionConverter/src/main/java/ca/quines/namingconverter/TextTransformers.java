@@ -49,13 +49,21 @@ public class TextTransformers {
     }
 
     public static String toUpperSnake(String input) {
-        // Handle CamelCase -> SNAKE_CASE
+    	if (input == null) {
+    		return "";
+    	}
+
+    	// Handle CamelCase -> SNAKE_CASE
         String result = input.replaceAll("([a-z])([A-Z]+)", "$1_$2");
         return result.replace(" ", "_").toUpperCase();
     }
 
     public static String toSqlInClause(String input, boolean isString) {
-        String[] lines = input.split("\\R");
+    	if (input == null) {
+    		return "";
+    	}
+
+    	String[] lines = input.split("\\R");
         String joined = Arrays.stream(lines)
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -67,9 +75,9 @@ public class TextTransformers {
     /** "CamelCase to Spaces" -> "Camel Case" */
     public static String camelCaseToSpaces(String input) {
         if (input == null) return "";
-        // Insert a space between a lowercase letter and an uppercase letter
-        // Using $1 $2 to reference the captured groups
-        return input.replaceAll("([a-z])([A-Z])", "$1 $2");
+        // This regex looks for a position that is followed by an uppercase letter,
+        // but is NOT the beginning of the string, and inserts a space there.
+        return input.replaceAll("(?<=.)(?=[A-Z])", " ");
     }
 
     /** "Spaces to UPPER_SNAKE_CASE" -> "UPPER_SNAKE_CASE" */
@@ -86,8 +94,8 @@ public class TextTransformers {
         return spacesToUpperSnake(spaced);
     }
 
-    /** Helper for snake to camel/Camel */
-    private static String snakeToGenericCamel(String input, boolean upperFirst) {
+    /** SNAKE_CASE to CamelCase or camelCase */
+    public static String snakeToCamel(String input, boolean upperFirst) {
         if (input == null || input.isEmpty()) return "";
         String[] parts = input.toLowerCase().split("_");
         StringBuilder sb = new StringBuilder();
@@ -103,17 +111,7 @@ public class TextTransformers {
         return sb.toString();
     }
 
-    /** "UPPER_SNAKE_CASE to camelCase" */
-    public static String snakeToCamelCase(String input) {
-        return snakeToGenericCamel(input, false);
-    }
-
-    /** "UPPER_SNAKE_CASE to CamelCase" */
-    public static String snakeToPascalCase(String input) {
-        return snakeToGenericCamel(input, true);
-    }
-
-    // A set of words that should remain lowercase in Title Case
+    // The main words that should remain lower case in Title Case.  We should use the Apache text library at some point.
     private static final Set<String> MINOR_WORDS = new HashSet<>(Arrays.asList(
         "a", "an", "and", "as", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "so", "the", "to", "up", "yet"
     ));
